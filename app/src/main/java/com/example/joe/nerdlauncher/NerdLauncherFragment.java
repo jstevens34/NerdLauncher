@@ -1,6 +1,7 @@
 package com.example.joe.nerdlauncher;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -65,7 +65,8 @@ public class NerdLauncherFragment extends Fragment {
         mRecyclerView.setAdapter(new ActivityAdapter(activities));
     }
 
-    private class ActivityHolder extends RecyclerView.ViewHolder{
+    private class ActivityHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener{
 
         private ResolveInfo mResolveInfo;
         private TextView mNameTextView;
@@ -73,6 +74,7 @@ public class NerdLauncherFragment extends Fragment {
         public ActivityHolder(View itemView) {
             super(itemView);
             mNameTextView = (TextView) itemView;
+            mNameTextView.setOnClickListener(this);
         }
 
         public void bindActivity(ResolveInfo resolveInfo){
@@ -80,6 +82,17 @@ public class NerdLauncherFragment extends Fragment {
             PackageManager pm = getActivity().getPackageManager();
             String appName = mResolveInfo.loadLabel(pm).toString();
             mNameTextView.setText(appName);
+        }
+
+        @Override
+        public void onClick(View v) {
+            ActivityInfo activityInfo = mResolveInfo.activityInfo;
+
+            Intent i = new Intent(Intent.ACTION_MAIN)
+                    .setClassName(activityInfo.applicationInfo.packageName,
+                            activityInfo.name);
+
+            startActivity(i);
         }
     }
 
